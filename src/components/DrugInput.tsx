@@ -60,8 +60,8 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
   
   useEffect(() => {
     if (drugs.length === 0) {
-      onChange([{ ...defaultDrug }, { ...defaultDrug }]);
-      setSearchQueries(["", ""]);
+      onChange([{ ...defaultDrug }]);
+      setSearchQueries([""]);
     } else if (searchQueries.length < drugs.length) {
       setSearchQueries(prev => [...prev, ...Array(drugs.length - prev.length).fill("")]);
     }
@@ -113,7 +113,7 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
   };
 
   const removeDrug = (index: number) => {
-    if (drugs.length <= 2) return;
+    if (drugs.length <= 1) return;
     const updatedDrugs = drugs.filter((_, i) => i !== index);
     onChange(updatedDrugs);
     
@@ -125,20 +125,12 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
     <Card className="w-full mb-6">
       <CardContent className="pt-6">
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium">Drug Information</h3>
-            <Button 
-              onClick={addDrug} 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center gap-1"
-            >
-              <Plus className="h-4 w-4" /> Add Drug
-            </Button>
           </div>
           
           {drugs.map((drug, index) => (
-            <div key={index} className="p-4 border rounded-md relative">
+            <div key={index} className="p-4 border rounded-md relative mb-4">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-4 relative">
                   <Label htmlFor={`drug-${index}`}>Drug Name (required)</Label>
@@ -209,18 +201,29 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
                   </Select>
                 </div>
               </div>
-              {drugs.length > 2 && (
+              {drugs.length > 1 && (
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => removeDrug(index)}
-                  className="absolute top-2 right-2 h-6 w-6 rounded-full p-0"
+                  className="absolute top-2 right-2 h-6 w-6 rounded-full p-0 text-muted-foreground hover:text-destructive"
                 >
                   <X className="h-4 w-4" />
+                  <span className="sr-only">Remove Drug</span>
                 </Button>
               )}
             </div>
           ))}
+
+          <div className="mt-4 flex justify-center">
+             <Button 
+              onClick={addDrug} 
+              variant="secondary"
+              className="w-full md:w-auto flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" /> Add Another Drug
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

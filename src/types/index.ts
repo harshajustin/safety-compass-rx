@@ -1,4 +1,3 @@
-
 // Types for the Drug Interaction Analysis and Safety System
 
 export type Drug = {
@@ -10,6 +9,7 @@ export type Drug = {
 };
 
 export type PatientData = {
+  name?: string;
   age?: number;
   sex?: 'male' | 'female' | 'other';
   weight?: number; // in kg

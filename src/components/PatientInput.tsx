@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,25 +20,74 @@ type PatientInputProps = {
   onToggleExpand: () => void;
 };
 
+// Helper component for displaying errors
+const InputError: React.FC<{ message?: string }> = ({ message }) => {
+  if (!message) return null;
+  return <p className="text-xs text-red-600 mt-1">{message}</p>;
+};
+
 const PatientInput: React.FC<PatientInputProps> = ({
   patientData,
   onChange,
   isExpanded,
   onToggleExpand,
 }) => {
+  // State for validation errors
+  const [errors, setErrors] = useState<Partial<Record<keyof PatientData, string>>>({});
+
+  // Validation function for numeric fields
+  const validateNumeric = (value: number | undefined, fieldName: string, allowZero = false): string | undefined => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return undefined; // No error if empty
+    } 
+    if (!allowZero && value <= 0) {
+      return `${fieldName} must be a positive number.`;
+    }
+     if (allowZero && value < 0) {
+       return `${fieldName} cannot be negative.`;
+     }
+    return undefined;
+  };
+
   const handleChange = <K extends keyof PatientData>(field: K, value: PatientData[K]) => {
+    let error: string | undefined = undefined;
+    // Add validation checks
+    if (field === 'age') {
+      error = validateNumeric(value as number | undefined, 'Age');
+    } else if (field === 'weight') {
+      error = validateNumeric(value as number | undefined, 'Weight');
+    } else if (field === 'height') {
+      error = validateNumeric(value as number | undefined, 'Height');
+    }
+    // Add more checks for other fields if needed
+
+    setErrors(prev => ({ ...prev, [field]: error }));
     onChange({ ...patientData, [field]: value });
   };
 
   const handleClinicalChange = <K extends keyof PatientData["clinicalParameters"]>(
     field: K,
-    value: any
+    value: any,
+    fieldName: string // Pass field name for validation message
   ) => {
     const clinicalParameters = patientData.clinicalParameters || {};
+    let error: string | undefined = undefined;
+
+    // Validate common clinical params
+    if (field === 'eGFR') {
+      error = validateNumeric(value as number | undefined, 'eGFR', true); // Allow zero for eGFR?
+    }
+    
+    // Update nested errors if needed (complex)
+    // For simplicity, we might only validate top-level clinical errors
+    // or add specific error states like [clinicalErrors, setClinicalErrors]
+
     onChange({
       ...patientData,
       clinicalParameters: { ...clinicalParameters, [field]: value },
     });
+     // Example: Update top-level clinical error state if needed
+     // setErrors(prev => ({ ...prev, clinicalParameters: error ? { [field]: error } : undefined }));
   };
 
   const handleBloodPressureChange = (
@@ -145,9 +193,18 @@ const PatientInput: React.FC<PatientInputProps> = ({
           <div className="space-y-6">
             {/* Demographics Section */}
             <div>
-              <h4 className="font-medium mb-3">Demographics</h4>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
+              <h4 className="text-lg font-medium mb-3">Demographics</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-1">
+                  <Label htmlFor="patient-name">Name</Label>
+                  <Input
+                    id="patient-name"
+                    placeholder="Enter patient name"
+                    value={patientData.name || ""}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                  />
+                </div>
+                <div className="md:col-span-1">
                   <Label htmlFor="age">Age</Label>
                   <Input
                     id="age"
@@ -155,9 +212,11 @@ const PatientInput: React.FC<PatientInputProps> = ({
                     placeholder="Enter age"
                     value={patientData.age || ""}
                     onChange={(e) => handleChange("age", parseInt(e.target.value) || undefined)}
+                    aria-invalid={!!errors.age}
                   />
+                  <InputError message={errors.age} />
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <Label htmlFor="sex">Sex</Label>
                   <Select
                     value={patientData.sex}
@@ -173,7 +232,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <Label htmlFor="weight">Weight (kg)</Label>
                   <Input
                     id="weight"
@@ -181,9 +240,11 @@ const PatientInput: React.FC<PatientInputProps> = ({
                     placeholder="Enter weight"
                     value={patientData.weight || ""}
                     onChange={(e) => handleChange("weight", parseFloat(e.target.value) || undefined)}
+                    aria-invalid={!!errors.weight}
                   />
+                  <InputError message={errors.weight} />
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <Label htmlFor="height">Height (cm)</Label>
                   <Input
                     id="height"
@@ -191,14 +252,16 @@ const PatientInput: React.FC<PatientInputProps> = ({
                     placeholder="Enter height"
                     value={patientData.height || ""}
                     onChange={(e) => handleChange("height", parseFloat(e.target.value) || undefined)}
+                    aria-invalid={!!errors.height}
                   />
+                  <InputError message={errors.height} />
                 </div>
               </div>
             </div>
 
             {/* Clinical Parameters */}
             <div>
-              <h4 className="font-medium mb-3">Clinical Parameters</h4>
+              <h4 className="text-lg font-medium mb-3">Clinical Parameters</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="egfr">eGFR (mL/min/1.73m²)</Label>
@@ -207,7 +270,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
                     type="number"
                     placeholder="Enter eGFR"
                     value={patientData.clinicalParameters?.eGFR || ""}
-                    onChange={(e) => handleClinicalChange("eGFR", parseFloat(e.target.value) || undefined)}
+                    onChange={(e) => handleClinicalChange("eGFR", parseFloat(e.target.value) || undefined, 'eGFR')}
                   />
                 </div>
                 <div>
@@ -255,7 +318,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
 
             {/* Medical History */}
             <div>
-              <h4 className="font-medium mb-3">Medical History</h4>
+              <h4 className="text-lg font-medium mb-3">Medical History</h4>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="conditions">Medical Conditions</Label>
@@ -384,7 +447,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
 
             {/* Current Medications */}
             <div>
-              <h4 className="font-medium mb-3">Current Medications</h4>
+              <h4 className="text-lg font-medium mb-3">Current Medications</h4>
               <div className="flex gap-2">
                 <Input
                   id="medications"
@@ -426,7 +489,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
 
             {/* Supplements */}
             <div>
-              <h4 className="font-medium mb-3">Supplements</h4>
+              <h4 className="text-lg font-medium mb-3">Supplements</h4>
               <div className="flex gap-2">
                 <Input
                   id="supplements"

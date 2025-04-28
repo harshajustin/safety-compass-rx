@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SafetyAssessmentResult, InteractionResult } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -113,15 +112,7 @@ const InteractionResults: React.FC<InteractionResultsProps> = ({
             <div className="flex items-center gap-2 mt-2 md:mt-0">
               <Button onClick={onGenerateReport} className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                <span>Generate Report</span>
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Printer className="h-4 w-4" />
-                <span>Print</span>
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2">
-                <ArrowDown className="h-4 w-4" />
-                <span>Download</span>
+                <span>View Full Report</span>
               </Button>
             </div>
           </div>
