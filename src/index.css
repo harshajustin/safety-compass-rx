@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,5 +98,77 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  }
+
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom styles for the Drug Interaction Analysis and Safety System */
+.medical-gradient {
+  background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
+}
+
+.risk-badge-none {
+  background-color: theme('colors.risk.none');
+  color: white;
+}
+
+.risk-badge-low {
+  background-color: theme('colors.risk.low');
+  color: black;
+}
+
+.risk-badge-moderate {
+  background-color: theme('colors.risk.moderate');
+  color: black;
+}
+
+.risk-badge-high {
+  background-color: theme('colors.risk.high');
+  color: white;
+}
+
+.risk-badge-critical {
+  background-color: theme('colors.risk.critical');
+  color: white;
+}
+
+.print-section {
+  page-break-inside: avoid;
+}
+
+.pulse-dot {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+/* Fix for missing X icon that was referenced in PatientInput but not imported */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
