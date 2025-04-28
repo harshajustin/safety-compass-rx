@@ -1,8 +1,11 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { SafetyAssessmentResult } from '@/types';
 import { FileDown, FileText, Printer } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 type ReportModalProps = {
   results: SafetyAssessmentResult;
@@ -50,9 +53,6 @@ const ReportModal: React.FC<ReportModalProps> = ({ results, open, onOpenChange }
     if (!element) return;
 
     try {
-      const { jsPDF } = await import('jspdf');
-      const { default: html2canvas } = await import('html2canvas');
-
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,

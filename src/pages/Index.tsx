@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DrugInput from '@/components/DrugInput';
 import PatientInput from '@/components/PatientInput';
@@ -13,6 +14,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { DrugEntry, PatientData, SafetyAssessmentResult } from '@/types';
 import { analyzeDrugInteractions } from '@/services/drugInteractionService';
 import { Search } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const Index = () => {
   const [drugs, setDrugs] = useState<DrugEntry[]>([]);
@@ -147,9 +150,6 @@ const Index = () => {
     try {
       const element = document.getElementById('report-printable');
       if (!element) return;
-
-      const { jsPDF } = await import('jspdf');
-      const { default: html2canvas } = await import('html2canvas');
 
       const canvas = await html2canvas(element, {
         scale: 2,
