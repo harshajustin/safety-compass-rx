@@ -41,18 +41,27 @@ const routeOptions = [
 
 const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
   const [suggestions, setSuggestions] = useState<Array<{ id: string; name: string }>>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  // Replace single searchQuery with an array of queries for each drug
+  const [searchQueries, setSearchQueries] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   
   // Initialize with at least 2 drug entries if none provided
   useEffect(() => {
     if (drugs.length === 0) {
       onChange([{ ...defaultDrug }, { ...defaultDrug }]);
+      setSearchQueries(["", ""]);
+    } else if (searchQueries.length < drugs.length) {
+      // Make sure searchQueries array has same length as drugs array
+      setSearchQueries(prev => [...prev, ...Array(drugs.length - prev.length).fill("")]);
     }
   }, [drugs, onChange]);
 
   const handleDrugSearch = (query: string, index: number) => {
-    setSearchQuery(query);
+    // Update only the search query for this specific drug
+    const updatedQueries = [...searchQueries];
+    updatedQueries[index] = query;
+    setSearchQueries(updatedQueries);
+    
     setActiveIndex(index);
     
     if (query.length >= 2) {
@@ -74,9 +83,13 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
       drugName: drug.name,
     };
     
+    // Clear the search query for this drug after selection
+    const updatedQueries = [...searchQueries];
+    updatedQueries[index] = "";
+    setSearchQueries(updatedQueries);
+    
     onChange(updatedDrugs);
     setSuggestions([]);
-    setSearchQuery("");
   };
 
   const handleInputChange = (index: number, field: keyof DrugEntry, value: string) => {
@@ -87,12 +100,17 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
 
   const addDrug = () => {
     onChange([...drugs, { ...defaultDrug }]);
+    setSearchQueries([...searchQueries, ""]);
   };
 
   const removeDrug = (index: number) => {
     if (drugs.length <= 2) return; // Keep minimum 2 drugs
     const updatedDrugs = drugs.filter((_, i) => i !== index);
     onChange(updatedDrugs);
+    
+    // Also remove the corresponding search query
+    const updatedQueries = searchQueries.filter((_, i) => i !== index);
+    setSearchQueries(updatedQueries);
   };
 
   return (
@@ -119,7 +137,7 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
                   <Input
                     id={`drug-${index}`}
                     placeholder="Enter drug name"
-                    value={searchQuery && activeIndex === index ? searchQuery : drug.drugName}
+                    value={searchQueries[index] || drug.drugName}
                     onChange={(e) => handleDrugSearch(e.target.value, index)}
                     className="w-full"
                   />
