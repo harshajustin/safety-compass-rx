@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { SafetyAssessmentResult } from '@/types';
-import { Printer, FileDown, Share } from 'lucide-react';
+import { FileDown, FileText, Printer } from 'lucide-react';
 
 type ReportModalProps = {
   results: SafetyAssessmentResult;
@@ -46,23 +45,45 @@ const ReportModal: React.FC<ReportModalProps> = ({ results, open, onOpenChange }
     }
   };
 
+  const handlePdfExport = async () => {
+    const element = document.getElementById('report-printable');
+    if (!element) return;
+
+    try {
+      const { jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('drug-interaction-report.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Drug Interaction Analysis Report</DialogTitle>
           <div className="flex justify-end gap-2 mt-2">
+            <Button onClick={handlePdfExport} variant="outline" size="sm" className="flex items-center gap-1">
+              <FileDown className="h-4 w-4" />
+              <span>Export PDF</span>
+            </Button>
             <Button onClick={handlePrint} variant="outline" size="sm" className="flex items-center gap-1">
               <Printer className="h-4 w-4" />
               <span>Print</span>
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <FileDown className="h-4 w-4" />
-              <span>Download PDF</span>
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Share className="h-4 w-4" />
-              <span>Share</span>
             </Button>
           </div>
         </DialogHeader>

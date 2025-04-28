@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DrugInput from '@/components/DrugInput';
 import PatientInput from '@/components/PatientInput';
 import InteractionResults from '@/components/InteractionResults';
@@ -23,6 +22,48 @@ const Index = () => {
   const [isPatientDataExpanded, setIsPatientDataExpanded] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const sampleDrugs = [
+      { drugId: "123", drugName: "Warfarin", dosage: "5mg", route: "oral", frequency: "daily" },
+      { drugId: "456", drugName: "Aspirin", dosage: "81mg", route: "oral", frequency: "daily" }
+    ];
+    
+    const samplePatientData = {
+      age: 65,
+      sex: 'male' as const,
+      weight: 70,
+      height: 175,
+      clinicalParameters: {
+        eGFR: 75,
+        liverEnzymes: {
+          alt: 30,
+          ast: 28
+        },
+        bloodPressure: {
+          systolic: 130,
+          diastolic: 85
+        }
+      },
+      medicalHistory: {
+        conditions: ["Hypertension", "Atrial Fibrillation"],
+        allergies: ["Penicillin"],
+        adverseReactions: ["Rash with sulfa drugs"]
+      },
+      currentMedications: ["Metoprolol", "Atorvastatin"],
+      supplements: ["Vitamin D", "Calcium"]
+    };
+
+    setDrugs(sampleDrugs);
+    setPatientData(samplePatientData);
+    handleAnalyzeWithDelay();
+  }, []);
+
+  const handleAnalyzeWithDelay = () => {
+    setTimeout(() => {
+      handleAnalyze();
+    }, 500);
+  };
 
   const handleAnalyze = () => {
     try {
@@ -100,6 +141,43 @@ const Index = () => {
     setDrugs([]);
     setPatientData({});
     setAnalysisResults(null);
+  };
+
+  const generatePDF = async () => {
+    try {
+      const element = document.getElementById('report-printable');
+      if (!element) return;
+
+      const { jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('drug-interaction-report.pdf');
+
+      toast({
+        title: "Success",
+        description: "PDF report has been generated and downloaded",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF report",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
