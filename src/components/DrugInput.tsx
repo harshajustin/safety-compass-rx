@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,25 +38,36 @@ const routeOptions = [
   "Transdermal"
 ];
 
+const frequencyOptions = [
+  "Once daily",
+  "Twice daily (BID)",
+  "Three times daily (TID)",
+  "Four times daily (QID)",
+  "Every 4 hours",
+  "Every 6 hours",
+  "Every 8 hours",
+  "Every 12 hours",
+  "As needed (PRN)",
+  "Weekly",
+  "Every other day",
+  "Monthly"
+];
+
 const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
   const [suggestions, setSuggestions] = useState<Array<{ id: string; name: string }>>([]);
-  // Replace single searchQuery with an array of queries for each drug
   const [searchQueries, setSearchQueries] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   
-  // Initialize with at least 2 drug entries if none provided
   useEffect(() => {
     if (drugs.length === 0) {
       onChange([{ ...defaultDrug }, { ...defaultDrug }]);
       setSearchQueries(["", ""]);
     } else if (searchQueries.length < drugs.length) {
-      // Make sure searchQueries array has same length as drugs array
       setSearchQueries(prev => [...prev, ...Array(drugs.length - prev.length).fill("")]);
     }
   }, [drugs, onChange]);
 
   const handleDrugSearch = (query: string, index: number) => {
-    // Update only the search query for this specific drug
     const updatedQueries = [...searchQueries];
     updatedQueries[index] = query;
     setSearchQueries(updatedQueries);
@@ -83,7 +93,6 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
       drugName: drug.name,
     };
     
-    // Clear the search query for this drug after selection
     const updatedQueries = [...searchQueries];
     updatedQueries[index] = "";
     setSearchQueries(updatedQueries);
@@ -104,11 +113,10 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
   };
 
   const removeDrug = (index: number) => {
-    if (drugs.length <= 2) return; // Keep minimum 2 drugs
+    if (drugs.length <= 2) return;
     const updatedDrugs = drugs.filter((_, i) => i !== index);
     onChange(updatedDrugs);
     
-    // Also remove the corresponding search query
     const updatedQueries = searchQueries.filter((_, i) => i !== index);
     setSearchQueries(updatedQueries);
   };
@@ -184,12 +192,21 @@ const DrugInput: React.FC<DrugInputProps> = ({ drugs, onChange }) => {
                 </div>
                 <div className="md:col-span-3">
                   <Label htmlFor={`frequency-${index}`}>Frequency</Label>
-                  <Input
-                    id={`frequency-${index}`}
-                    placeholder="e.g., Once daily, BID, TID"
+                  <Select
                     value={drug.frequency}
-                    onChange={(e) => handleInputChange(index, "frequency", e.target.value)}
-                  />
+                    onValueChange={(value) => handleInputChange(index, "frequency", value)}
+                  >
+                    <SelectTrigger className="w-full" id={`frequency-${index}`}>
+                      <SelectValue placeholder="Select frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {frequencyOptions.map((frequency) => (
+                        <SelectItem key={frequency} value={frequency}>
+                          {frequency}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               {drugs.length > 2 && (
