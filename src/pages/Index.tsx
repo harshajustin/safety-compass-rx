@@ -244,8 +244,9 @@ const Index = () => {
         />
       )}
 
-      {/* Global styling for reports */}
-      <style jsx global>{`
+      {/* Global styling for reports - Fix the style tag by removing jsx and global attributes */}
+      <style>
+        {`
         @media print {
           body * {
             visibility: hidden;
@@ -263,7 +264,8 @@ const Index = () => {
             page-break-inside: avoid;
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
