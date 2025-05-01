@@ -47,7 +47,7 @@ const HeroSection = () => {
                 asChild
                 variant="outline" 
                 size="lg"
-                className="border-blue-200 hover:bg-blue-50 h-auto py-6"
+                className="border-blue-200 hover:bg-blue-50 h-auto py-6 transition-colors"
               >
                 <Link to="/how-to-use">
                   Learn More

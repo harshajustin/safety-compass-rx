@@ -57,7 +57,7 @@ const CallToAction = () => {
                   asChild
                   variant="outline" 
                   size="lg"
-                  className="border-white text-white hover:bg-blue-700/30"
+                  className="border-white text-white hover:bg-blue-700/30 transition-colors"
                 >
                   <Link to="/how-to-use">
                     Learn More
@@ -67,11 +67,15 @@ const CallToAction = () => {
             </div>
             
             <div className="hidden md:block">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl transform transition-transform duration-300 hover:scale-[1.02]">
                 <img 
-                  src="https://images.unsplash.com/photo-1631815587646-b85a1bb027e3?auto=format&fit=crop&q=80&w=600" 
+                  src="/lovable-uploads/e6d897c6-a416-4bf9-be82-bd93d19656d5.png" 
                   alt="Healthcare professional using tablet" 
                   className="w-full rounded-xl shadow-lg"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1631815587646-b85a1bb027e3?auto=format&fit=crop&q=80&w=600";
+                    console.log("Image failed to load, using fallback");
+                  }}
                 />
               </div>
             </div>
