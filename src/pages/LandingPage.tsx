@@ -10,14 +10,14 @@ import FooterSection from '@/components/FooterSection';
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <HeaderSection />
       <main>
         <HeroSection />
         <FeaturesSection />
         <TestimonialSection />
         <CallToAction />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-16">
           <DisclaimerSection />
         </div>
       </main>

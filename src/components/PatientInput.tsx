@@ -78,16 +78,10 @@ const PatientInput: React.FC<PatientInputProps> = ({
       error = validateNumeric(value as number | undefined, 'eGFR', true); // Allow zero for eGFR?
     }
     
-    // Update nested errors if needed (complex)
-    // For simplicity, we might only validate top-level clinical errors
-    // or add specific error states like [clinicalErrors, setClinicalErrors]
-
     onChange({
       ...patientData,
       clinicalParameters: { ...clinicalParameters, [field]: value },
     });
-     // Example: Update top-level clinical error state if needed
-     // setErrors(prev => ({ ...prev, clinicalParameters: error ? { [field]: error } : undefined }));
   };
 
   const handleBloodPressureChange = (
@@ -95,7 +89,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
     value: number
   ) => {
     const bloodPressure = patientData.clinicalParameters?.bloodPressure || {};
-    handleClinicalChange("bloodPressure", { ...bloodPressure, [field]: value });
+    handleClinicalChange("bloodPressure", { ...bloodPressure, [field]: value }, field.toString());
   };
 
   const handleLiverEnzymesChange = (
@@ -103,7 +97,7 @@ const PatientInput: React.FC<PatientInputProps> = ({
     value: number
   ) => {
     const liverEnzymes = patientData.clinicalParameters?.liverEnzymes || {};
-    handleClinicalChange("liverEnzymes", { ...liverEnzymes, [field]: value });
+    handleClinicalChange("liverEnzymes", { ...liverEnzymes, [field]: value }, field.toString());
   };
 
   const handleArrayChange = <K extends keyof PatientData["medicalHistory"]>(

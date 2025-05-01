@@ -1,23 +1,52 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Stethoscope, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const HeaderSection = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
   return (
-    // Apply sticky positioning and glassmorphism styles
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-lg border-b border-gray-200/60 shadow-sm">
+    <header 
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-lg shadow-md' 
+          : 'bg-transparent'
+      }`}
+    >
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo/Title Area */}
         <Link to="/" className="flex items-center gap-2">
-          <Stethoscope className="h-6 w-6 text-blue-600" /> 
+          <div className="bg-blue-600 text-white p-1.5 rounded-md">
+            <Stethoscope className="h-5 w-5" /> 
+          </div>
           <h1 className="text-lg font-semibold text-gray-800">Drug Interaction Analysis</h1>
         </Link>
         
@@ -35,7 +64,7 @@ const HeaderSection = () => {
           >
             How to Use
           </Link>
-          <Button asChild variant="outline" className="ml-4">
+          <Button asChild variant="default" className="ml-4 bg-blue-600 hover:bg-blue-700">
             <Link to="/app">Open App</Link>
           </Button>
         </nav>
@@ -55,7 +84,7 @@ const HeaderSection = () => {
       
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-md">
+        <div className="md:hidden bg-white border-b border-gray-200 shadow-md animate-fade-in">
           <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
             <Link 
               to="/" 

@@ -37,12 +37,13 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Key Features</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Our system provides comprehensive tools to ensure medication safety and improve patient outcomes.
+        <div className="text-center mb-16">
+          <span className="inline-block text-blue-600 font-semibold mb-3">Features</span>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Comprehensive Tools for Healthcare</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Our system provides advanced features to ensure medication safety and improve patient outcomes.
           </p>
         </div>
         
@@ -50,12 +51,12 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:translate-y-[-5px] duration-300"
             >
-              <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-white p-3 shadow-sm">
+              <div className="mb-5 inline-flex items-center justify-center rounded-full bg-gray-50 p-4 shadow-sm">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
               <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
