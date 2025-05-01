@@ -31,24 +31,10 @@ const CallToAction = () => {
                     {benefit}
                   </li>)}
               </ul>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-white text-indigo-700 hover:bg-blue-50 shadow-lg shadow-indigo-900/20">
-                  <Link to="/app">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-700/30 transition-colors">
-                  <Link to="/how-to-use" className="The button is not continuously visible and only appears when the cursor is placed over it.\nPlease make the button constantly visible for user convenience">
-                    Learn More
-                  </Link>
-                </Button>
-              </div>
             </div>
             
             <div className="hidden md:block">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl transform transition-transform duration-300 hover:scale-[1.02]">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
                 <img src="/lovable-uploads/e6d897c6-a416-4bf9-be82-bd93d19656d5.png" alt="Healthcare professional using tablet" className="w-full rounded-xl shadow-lg" onError={e => {
                 e.currentTarget.src = "https://images.unsplash.com/photo-1631815587646-b85a1bb027e3?auto=format&fit=crop&q=80&w=600";
                 console.log("Image failed to load, using fallback");

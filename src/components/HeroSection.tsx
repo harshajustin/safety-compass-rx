@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, CheckCircle, ArrowRight } from 'lucide-react';
@@ -36,7 +35,7 @@ const HeroSection = () => {
               <Button 
                 asChild
                 size="lg" 
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium px-8 py-6 h-auto shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-600/20"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium px-8 py-6 h-auto shadow-lg shadow-blue-500/20"
               >
                 <Link to="/app">
                   Get Started
@@ -70,7 +69,7 @@ const HeroSection = () => {
           
           {/* Right column - Image */}
           <div className="relative">
-            <div className="relative rounded-xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
+            <div className="relative rounded-xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20" />
               <div className="p-4 bg-white/90 backdrop-blur-sm border border-gray-200/60 rounded-xl">
                 <img 
