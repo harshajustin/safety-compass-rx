@@ -1,3 +1,4 @@
+
 // Types for the Drug Interaction Analysis and Safety System
 
 export type Drug = {
@@ -83,6 +84,8 @@ export type SafetyAssessmentResult = {
   lastUpdated: string;
   overallRiskLevel: RiskLevel;
   overallCompatibilityStatus: 'compatible' | 'incompatible';
+  patientData?: PatientData; // Added patient data
+  drugEntries?: DrugEntry[]; // Added drug entries
 };
 
 export type AnalysisRequest = {

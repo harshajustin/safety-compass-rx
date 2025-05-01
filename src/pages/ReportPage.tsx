@@ -1,10 +1,11 @@
+
 import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { SafetyAssessmentResult } from '@/types';
+import { SafetyAssessmentResult, PatientData, DrugEntry } from '@/types';
 import { Download, Printer } from 'lucide-react';
 
 // Helper function to format date
@@ -84,7 +85,199 @@ const ReportPage = () => {
     overallCompatibilityStatus,
     databaseVersion,
     lastUpdated,
+    patientData,
+    drugEntries,
   } = results;
+
+  // Function to render patient information if available
+  const renderPatientInformation = () => {
+    if (!patientData) return null;
+    
+    return (
+      <div className="mt-6">
+        <h3 className="text-xl font-bold mb-4">Patient Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border">
+          {patientData.name && (
+            <div>
+              <span className="text-sm text-gray-500">Name:</span>
+              <div className="font-medium">{patientData.name}</div>
+            </div>
+          )}
+          
+          {patientData.age && (
+            <div>
+              <span className="text-sm text-gray-500">Age:</span>
+              <div className="font-medium">{patientData.age} years</div>
+            </div>
+          )}
+          
+          {patientData.sex && (
+            <div>
+              <span className="text-sm text-gray-500">Sex:</span>
+              <div className="font-medium capitalize">{patientData.sex}</div>
+            </div>
+          )}
+          
+          {patientData.weight && (
+            <div>
+              <span className="text-sm text-gray-500">Weight:</span>
+              <div className="font-medium">{patientData.weight} kg</div>
+            </div>
+          )}
+          
+          {patientData.height && (
+            <div>
+              <span className="text-sm text-gray-500">Height:</span>
+              <div className="font-medium">{patientData.height} cm</div>
+            </div>
+          )}
+          
+          {/* Clinical Parameters */}
+          {patientData.clinicalParameters && Object.keys(patientData.clinicalParameters).length > 0 && (
+            <div className="col-span-1 md:col-span-2">
+              <div className="text-sm font-medium text-gray-700 mb-2">Clinical Parameters</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {patientData.clinicalParameters.eGFR !== undefined && (
+                  <div>
+                    <span className="text-sm text-gray-500">eGFR:</span>
+                    <div className="font-medium">{patientData.clinicalParameters.eGFR} mL/min/1.73m²</div>
+                  </div>
+                )}
+                
+                {patientData.clinicalParameters.liverEnzymes && (
+                  <>
+                    {patientData.clinicalParameters.liverEnzymes.alt !== undefined && (
+                      <div>
+                        <span className="text-sm text-gray-500">ALT:</span>
+                        <div className="font-medium">{patientData.clinicalParameters.liverEnzymes.alt} U/L</div>
+                      </div>
+                    )}
+                    {patientData.clinicalParameters.liverEnzymes.ast !== undefined && (
+                      <div>
+                        <span className="text-sm text-gray-500">AST:</span>
+                        <div className="font-medium">{patientData.clinicalParameters.liverEnzymes.ast} U/L</div>
+                      </div>
+                    )}
+                  </>
+                )}
+                
+                {patientData.clinicalParameters.bloodPressure && (
+                  <div>
+                    <span className="text-sm text-gray-500">Blood Pressure:</span>
+                    <div className="font-medium">
+                      {patientData.clinicalParameters.bloodPressure.systolic}/{patientData.clinicalParameters.bloodPressure.diastolic} mmHg
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Medical History */}
+          {patientData.medicalHistory && (
+            <div className="col-span-1 md:col-span-2">
+              <div className="text-sm font-medium text-gray-700 mb-2">Medical History</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {patientData.medicalHistory.conditions && patientData.medicalHistory.conditions.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-500">Conditions:</span>
+                    <ul className="list-disc pl-5 text-sm">
+                      {patientData.medicalHistory.conditions.map((condition, idx) => (
+                        <li key={idx}>{condition}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {patientData.medicalHistory.allergies && patientData.medicalHistory.allergies.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-500">Allergies:</span>
+                    <ul className="list-disc pl-5 text-sm">
+                      {patientData.medicalHistory.allergies.map((allergy, idx) => (
+                        <li key={idx}>{allergy}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {patientData.medicalHistory.adverseReactions && patientData.medicalHistory.adverseReactions.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-500">Adverse Reactions:</span>
+                    <ul className="list-disc pl-5 text-sm">
+                      {patientData.medicalHistory.adverseReactions.map((reaction, idx) => (
+                        <li key={idx}>{reaction}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Medications */}
+          {patientData.currentMedications && patientData.currentMedications.length > 0 && (
+            <div className="col-span-1 md:col-span-2">
+              <div className="text-sm font-medium text-gray-700 mb-2">Current Medications</div>
+              <div className="flex flex-wrap gap-2">
+                {patientData.currentMedications.map((med, idx) => (
+                  <span key={idx} className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm">
+                    {med}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Supplements */}
+          {patientData.supplements && patientData.supplements.length > 0 && (
+            <div className="col-span-1 md:col-span-2">
+              <div className="text-sm font-medium text-gray-700 mb-2">Supplements</div>
+              <div className="flex flex-wrap gap-2">
+                {patientData.supplements.map((sup, idx) => (
+                  <span key={idx} className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-sm">
+                    {sup}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Function to render drug entries if available
+  const renderDrugEntries = () => {
+    if (!drugEntries || drugEntries.length === 0) return null;
+    
+    return (
+      <div className="mt-6">
+        <h3 className="text-xl font-bold mb-4">Drug Information</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border rounded-lg">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drug Name</th>
+                <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
+                <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
+                <th className="py-2 px-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {drugEntries.map((drug, index) => (
+                <tr key={index}>
+                  <td className="py-2 px-3 whitespace-nowrap">{drug.drugName}</td>
+                  <td className="py-2 px-3 whitespace-nowrap">{drug.dosage || 'Not specified'}</td>
+                  <td className="py-2 px-3 whitespace-nowrap capitalize">{drug.route || 'Not specified'}</td>
+                  <td className="py-2 px-3 whitespace-nowrap">{drug.frequency || 'Not specified'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
 
   // Actual report content rendering, adapted from ReportModal
   const renderReportContent = () => {
@@ -99,6 +292,12 @@ const ReportPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Patient Information Section */}
+        {renderPatientInformation()}
+        
+        {/* Drug Information Section */}
+        {renderDrugEntries()}
 
         <div className="mt-6">
           <h3 className="text-xl font-bold mb-4">Safety Assessment Summary</h3>
