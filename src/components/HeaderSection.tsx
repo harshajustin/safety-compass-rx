@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Stethoscope, Menu, X, LogIn, LogOut } from 'lucide-react';
@@ -111,6 +112,7 @@ const HeaderSection = () => {
           <nav className="flex items-center gap-6">
             <Link to="/" className="text-sm font-medium text-gray-600 hover:text-blue-600">Home</Link>
             <Link to="/how-to-use" className="text-sm font-medium text-gray-600 hover:text-blue-600">How to Use</Link>
+            <Link to="/contact" className="text-sm font-medium text-gray-600 hover:text-blue-600">Contact</Link>
             {currentUser && (
                <Link to="/add-testimonial" className="text-sm font-medium text-gray-600 hover:text-blue-600">
                  Add Testimonial
@@ -134,6 +136,7 @@ const HeaderSection = () => {
            <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
              <Link to="/" className="text-gray-700 hover:text-blue-600 py-2" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
              <Link to="/how-to-use" className="text-gray-700 hover:text-blue-600 py-2" onClick={() => setIsMobileMenuOpen(false)}>How to Use</Link>
+             <Link to="/contact" className="text-gray-700 hover:text-blue-600 py-2" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
              {currentUser && (
                <Link to="/add-testimonial" className="text-gray-700 hover:text-blue-600 py-2" onClick={() => setIsMobileMenuOpen(false)}>
                  Add Testimonial

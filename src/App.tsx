@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import ReportPage from "./pages/ReportPage";
 import HowToUsePage from "./pages/HowToUsePage";
 import AddTestimonialForm from "@/components/AddTestimonialForm";
+import ContactPage from "./pages/ContactPage";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/how-to-use" element={<HowToUsePage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/app" element={<Index />} />
               <Route path="/report" element={<ReportPage />} />
