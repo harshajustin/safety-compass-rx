@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { toast } from '@/components/ui/sonner';
-import { Mail } from 'lucide-react';
+import { Mail, Loader2 } from 'lucide-react';
 
 // Define form schema with validation
 const formSchema = z.object({
@@ -28,6 +28,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const ContactForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,23 +41,25 @@ const ContactForm = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // In a real application, this would send data to a backend endpoint
-      // For now, we'll simulate success and show what would be emailed
-      console.log('Form data to be sent:', data);
+      setIsSubmitting(true);
       
-      // Email template that would be sent (for demonstration)
-      const emailTemplate = `
-        To: harshajustin2@gmail.com
-        Subject: New Contact Form Submission
-        
-        Name: ${data.name}
-        Email: ${data.email}
-        
-        Message:
-        ${data.message}
-      `;
+      // Determine the API URL based on environment
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
       
-      console.log('Email that would be sent:', emailTemplate);
+      // Send data to backend endpoint
+      const response = await fetch(`${apiUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message');
+      }
       
       // Show success message
       toast.success('Message sent successfully!', {
@@ -67,8 +71,10 @@ const ContactForm = () => {
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error('Failed to send message', {
-        description: 'Please try again later or email us directly.',
+        description: error instanceof Error ? error.message : 'Please try again later or email us directly.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -83,7 +89,7 @@ const ContactForm = () => {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your name" {...field} />
+                  <Input placeholder="Your name" {...field} disabled={isSubmitting} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -97,7 +103,11 @@ const ContactForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="your.email@example.com" {...field} />
+                  <Input 
+                    placeholder="your.email@example.com" 
+                    {...field} 
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,6 +125,7 @@ const ContactForm = () => {
                     placeholder="How can we help you?" 
                     className="min-h-[120px]"
                     {...field} 
+                    disabled={isSubmitting}
                   />
                 </FormControl>
                 <FormMessage />
@@ -122,8 +133,16 @@ const ContactForm = () => {
             )}
           />
           
-          <Button type="submit" className="w-full">
-            <Mail className="mr-2 h-4 w-4" /> Send Message
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
+              </>
+            ) : (
+              <>
+                <Mail className="mr-2 h-4 w-4" /> Send Message
+              </>
+            )}
           </Button>
           
           <FormDescription className="text-center">

@@ -6,6 +6,7 @@ const session = require('express-session'); // Import session
 const passport = require('passport'); // Import passport
 const GoogleStrategy = require('passport-google-oauth20').Strategy; // Import Google strategy
 const PgSession = require('connect-pg-simple')(session); // Import session store
+const nodemailer = require('nodemailer'); // Import nodemailer for email sending
 
 const app = express();
 const port = process.env.PORT || 3001; // Use port from .env or default to 3001
@@ -131,6 +132,27 @@ passport.deserializeUser(async (id, done) => {
   } catch (err) {
     console.error("Error in Deserialize User:", err); // Keep Error Log
     done(err, null);
+  }
+});
+
+// --- Email Configuration ---
+// Setup nodemailer transporter with SMTP configuration
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.EMAIL_PORT || '587', 10),
+  secure: process.env.EMAIL_SECURE === 'true',
+  auth: {
+    user: process.env.EMAIL_USER || 'your-email@gmail.com',
+    pass: process.env.EMAIL_PASSWORD || 'your-email-password',
+  },
+});
+
+// Verify transporter connection configuration
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP connection error:', error);
+  } else {
+    console.log('Server is ready to take messages');
   }
 });
 
@@ -301,6 +323,74 @@ app.put('/api/testimonials/:id/toggle-feature', ensureAuthenticated, async (req,
   }
 });
 
+// --- Contact Form Route ---
+// POST /api/contact - Send contact form emails
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+
+  // Validate input
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'All fields are required: name, email, and message' });
+  }
+
+  // Email configuration
+  const mailOptions = {
+    from: process.env.EMAIL_USER || 'noreply@yourdomain.com',
+    to: 'harshajustin2@gmail.com', // Fixed destination email
+    replyTo: email, // Allow for direct replies to the sender
+    subject: `New Contact Form Submission from ${name}`,
+    text: `
+Name: ${name}
+Email: ${email}
+
+Message:
+${message}
+    `,
+    html: `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h2 style="color: #4F46E5;">New Contact Form Submission</h2>
+  <div style="border-left: 4px solid #4F46E5; padding-left: 15px; margin: 20px 0;">
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+  </div>
+  <div style="background: #f9fafb; padding: 15px; border-radius: 5px;">
+    <h3 style="margin-top: 0;">Message:</h3>
+    <p style="white-space: pre-line;">${message}</p>
+  </div>
+  <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">
+    This email was sent from your website contact form.
+  </p>
+</div>
+    `
+  };
+
+  try {
+    // Send email
+    await transporter.sendMail(mailOptions);
+    
+    // Log the submission to the database for record keeping (optional)
+    await pool.query(
+      'INSERT INTO contact_submissions (name, email, message) VALUES ($1, $2, $3)',
+      [name, email, message]
+    ).catch(err => {
+      // Just log the error, don't fail the request if DB insertion fails
+      console.error('Error logging contact submission to database:', err.message);
+    });
+
+    // Return success
+    res.status(200).json({ message: 'Message sent successfully!' });
+  } catch (err) {
+    console.error('Error sending email:', err.message);
+    
+    // For development, include detailed error in response
+    const errorDetails = process.env.NODE_ENV === 'production' 
+      ? 'Failed to send message. Please try again later.' 
+      : err.message;
+    
+    res.status(500).json({ error: 'Failed to send message', details: errorDetails });
+  }
+});
+
 // Basic root route (optional)
 app.get('/', (req, res) => {
   res.send('Testimonial API Backend Running');
@@ -309,4 +399,4 @@ app.get('/', (req, res) => {
 // --- Start Server ---
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
-}); 
+});
