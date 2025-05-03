@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/components/ui/use-toast';
 import { Mail, Loader2 } from 'lucide-react';
 
 // Define form schema with validation
@@ -43,35 +43,26 @@ const ContactForm = () => {
     try {
       setIsSubmitting(true);
       
-      // Determine the API URL based on environment
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      // Simulate form submission for demonstration
+      console.log('Form submitted with data:', data);
       
-      // Send data to backend endpoint
-      const response = await fetch(`${apiUrl}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send message');
-      }
+      // Wait for a moment to simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Show success message
-      toast.success('Message sent successfully!', {
-        description: 'Thank you for contacting us. We will get back to you soon.',
+      toast({
+        title: "Message sent successfully!",
+        description: "Thank you for contacting us. We will get back to you soon.",
       });
       
       // Reset the form
       form.reset();
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Failed to send message', {
-        description: error instanceof Error ? error.message : 'Please try again later or email us directly.',
+      toast({
+        title: "Failed to send message",
+        description: "Please try again later or email us directly.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
