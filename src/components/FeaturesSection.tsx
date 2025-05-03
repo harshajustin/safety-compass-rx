@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Shield, PieChart, Heart, Clock, FileText } from 'lucide-react';
+import { AlertTriangle, Shield, PieChart, Heart, Clock, FileText, Pills, Coffee, Wine } from 'lucide-react';
 
 const features = [
   {
@@ -32,6 +32,21 @@ const features = [
     icon: <FileText className="h-10 w-10 text-gray-500" />,
     title: 'Documentation',
     description: 'Generate and export detailed documentation for patient records.'
+  },
+  {
+    icon: <Pills className="h-10 w-10 text-indigo-500" />,
+    title: 'Drug-drug Interactions',
+    description: 'Advanced detection and analysis of how medications interact with each other.'
+  },
+  {
+    icon: <Coffee className="h-10 w-10 text-yellow-600" />,
+    title: 'Drug-food Interactions',
+    description: 'Identify foods that may affect medication efficacy or cause adverse reactions.'
+  },
+  {
+    icon: <Wine className="h-10 w-10 text-red-600" />,
+    title: 'Drug-alcohol Interactions',
+    description: 'Analyze potential risks when combining medications with alcohol consumption.'
   }
 ];
 
