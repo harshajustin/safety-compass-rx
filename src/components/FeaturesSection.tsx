@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle, Shield, PieChart, Heart, Clock, FileText, Pills, Coffee, Wine } from 'lucide-react';
+import { AlertTriangle, Shield, PieChart, Heart, Clock, FileText, Pill, Coffee, Wine } from 'lucide-react';
 
 const features = [
   {
@@ -34,7 +34,7 @@ const features = [
     description: 'Generate and export detailed documentation for patient records.'
   },
   {
-    icon: <Pills className="h-10 w-10 text-indigo-500" />,
+    icon: <Pill className="h-10 w-10 text-indigo-500" />,
     title: 'Drug-drug Interactions',
     description: 'Advanced detection and analysis of how medications interact with each other.'
   },
