@@ -7,8 +7,10 @@ import { DrugEntry, PatientData } from '@/types';
 import InteractionResults from '@/components/InteractionResults';
 import FooterSection from '@/components/FooterSection';
 import { analyzeInteractions } from '@/services/drugInteractionService';
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { getDemoData } from '@/utils/demoData';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   // State for drugs
@@ -35,6 +37,7 @@ const Index = () => {
   const [showResults, setShowResults] = useState(false);
   
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleAnalyze = async () => {
     // Validate at least one drug name is entered
@@ -93,11 +96,47 @@ const Index = () => {
     setShowResults(false);
   };
 
+  // New function to load demo data
+  const loadDemoData = () => {
+    const demoData = getDemoData();
+    
+    // Set demo data to state
+    setDrugs(demoData.drugs);
+    setFoodInteractions(demoData.foodInteractions);
+    setAlcoholInteractions(demoData.alcoholInteractions);
+    setAlcoholDetails(demoData.alcoholDetails);
+    setPatientData(demoData.patientData);
+    setPatientInfoExpanded(true);
+    
+    // Show toast notification
+    toast({
+      title: "Demo Data Loaded",
+      description: "Demo data has been loaded. Click 'Analyze Interactions' to see results.",
+    });
+  };
+
+  // Navigate to the full report page
+  const viewFullReport = () => {
+    if (results) {
+      navigate('/report', { state: { analysisResults: results } });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Drug Interaction Analyzer</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Drug Interaction Analyzer</h1>
+            <Button 
+              variant="outline" 
+              onClick={loadDemoData}
+              className="flex items-center gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Load Demo Data
+            </Button>
+          </div>
           
           <div className="mb-8">
             <DrugInput 
@@ -143,8 +182,15 @@ const Index = () => {
           </div>
           
           {showResults && (
-            <div id="results-section">
+            <div id="results-section" className="mb-8">
               <InteractionResults results={results} />
+              {results && (
+                <div className="flex justify-center mt-6">
+                  <Button onClick={viewFullReport} className="bg-blue-600 hover:bg-blue-700">
+                    View Full Report
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
