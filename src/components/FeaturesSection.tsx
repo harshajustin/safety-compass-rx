@@ -4,6 +4,21 @@ import { AlertTriangle, Shield, PieChart, Heart, Clock, FileText, Pill, Coffee, 
 
 const features = [
   {
+    icon: <Pill className="h-10 w-10 text-indigo-500" />,
+    title: 'Drug-drug Interactions',
+    description: 'Advanced detection and analysis of how medications interact with each other.'
+  },
+  {
+    icon: <Coffee className="h-10 w-10 text-yellow-600" />,
+    title: 'Drug-food Interactions',
+    description: 'Identify foods that may affect medication efficacy or cause adverse reactions.'
+  },
+  {
+    icon: <Wine className="h-10 w-10 text-red-600" />,
+    title: 'Drug-alcohol Interactions',
+    description: 'Analyze potential risks when combining medications with alcohol consumption.'
+  },
+  {
     icon: <AlertTriangle className="h-10 w-10 text-amber-500" />,
     title: 'Risk Detection',
     description: 'Identify potential drug interactions that may cause adverse effects to patients.'
@@ -32,22 +47,8 @@ const features = [
     icon: <FileText className="h-10 w-10 text-gray-500" />,
     title: 'Documentation',
     description: 'Generate and export detailed documentation for patient records.'
-  },
-  {
-    icon: <Pill className="h-10 w-10 text-indigo-500" />,
-    title: 'Drug-drug Interactions',
-    description: 'Advanced detection and analysis of how medications interact with each other.'
-  },
-  {
-    icon: <Coffee className="h-10 w-10 text-yellow-600" />,
-    title: 'Drug-food Interactions',
-    description: 'Identify foods that may affect medication efficacy or cause adverse reactions.'
-  },
-  {
-    icon: <Wine className="h-10 w-10 text-red-600" />,
-    title: 'Drug-alcohol Interactions',
-    description: 'Analyze potential risks when combining medications with alcohol consumption.'
   }
+  
 ];
 
 const FeaturesSection = () => {
